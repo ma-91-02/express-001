@@ -1,9 +1,22 @@
-const http = require('http');
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+const adminData = require("./routes/admin");
+const shopRoutes = require('./routes/shop');
+const path = require('path');
+const rootDir = require('./util/path');
+app.use(bodyParser.urlencoded({extended: false}));
+// to join with file like css
+app.use(express.static(path.join(__dirname,'public')));
+app.use('/admin',adminData.routes);
+app.use(shopRoutes);
 
-const routes = require('./routes');
 
-console.log(routes.someText);
+app.use((req, res, next)=>{
+    // res.status(404).sendFile(path.join(rootDir, 'views','404.html'));
+    res.status(404).render('404', {pageTitle: 'Page Not Found!'});
+});
 
-const server = http.createServer(routes.handler);
-
-server.listen(3000);
+app.listen(4000);
